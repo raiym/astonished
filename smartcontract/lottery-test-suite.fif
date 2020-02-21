@@ -10,7 +10,19 @@ PROGRAM{
   }>
   recv_external PROC:<{
     //  in_msg
-    DROP	// 
+    DUP	//  in_msg in_msg
+    SEMPTY	//  in_msg _1
+    IFJMP:<{	//  in_msg
+      DROP	// 
+    }>	//  in_msg
+    32 LDU	//  _17 _16
+    DROP	//  msg_seqno
+    c4 PUSH	//  msg_seqno _7
+    CTOS	//  msg_seqno ds
+    32 LDU	//  msg_seqno _19 _18
+    DROP	//  msg_seqno stored_seqno
+    EQUAL	//  _14
+    33 THROWIFNOT
   }>
 }END>s constant code
 

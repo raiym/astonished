@@ -3,6 +3,12 @@
 }
 
 () recv_external(slice in_msg) impure {
-    ;; TODO: implementation  
+    if (slice_empty?(in_msg)) {
+        return (); 
+    }
+    int msg_seqno = in_msg~load_uint(32);
+    var ds = begin_parse(get_data());
+    int stored_seqno = ds~load_uint(32);
+    throw_unless(33, msg_seqno == stored_seqno);
 }
 
