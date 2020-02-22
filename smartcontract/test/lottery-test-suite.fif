@@ -1,6 +1,6 @@
 "TonUtil.fif" include
 "Asm.fif" include
-"lottery-compiled-for-test.fif" include
+"../build/lottery-compiled-for-test.fif" include
 
 0 tuple 0x076ef1ea , // magic
 0 , 0 , // actions msg_sents

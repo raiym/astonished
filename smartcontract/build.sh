@@ -7,3 +7,5 @@ sed '$d' lottery-compiled-for-test.fif > test.fif
 rm lottery-compiled-for-test.fif
 mv test.fif lottery-compiled-for-test.fif
 echo -n "}END>s constant code" >> lottery-compiled-for-test.fif
+mv lottery-compiled.fif ./build/
+mv lottery-compiled-for-test.fif ./build/
