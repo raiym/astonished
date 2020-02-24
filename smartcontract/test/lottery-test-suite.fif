@@ -99,3 +99,29 @@ exit_code !
 ."Exit code " exit_code @ . cr 
 
 exit_code @ 0 - abort"Test #3 Not passed"
+
+// Test #4. Throw exception when wrong signature provided. 
+
+<b 0 32 u, owner_public_key @ B, 0 32 u, 0 32 u, 0 Gram, 0 Gram, owner_wc @ 32 i, owner_account_id @ 256 u,  orders @ dict, b> storage !
+
+<b 0 32 u, b> message_to_sign !
+
+variable not_owner_private_key
+ 
+"./keys/not-owner.pk" file>B not_owner_private_key !
+
+message_to_sign @ hashu not_owner_private_key @ ed25519_sign_uint signature !
+<b signature @ B, 0 32 u, b> <s  message_to_send !  
+
+message_to_send @ 
+recv_external 
+code 
+storage @
+c7
+runvmctx
+
+storage ! 
+exit_code ! 
+."Exit code " exit_code @ . cr 
+
+exit_code @ 34 - abort"Test #4 not passed"
