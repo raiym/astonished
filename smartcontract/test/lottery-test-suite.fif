@@ -197,3 +197,42 @@ variable is_account_id_eq
 is_account_id_eq !
 is_account_id_eq @ 1 +
 abort"Test #5 failed. Reason: stored account_id is different from target"
+
+
+// Test #6.1. Try to send to owner more than available balance. 
+
+<b 0 32 u, owner_public_key @ B, 0 32 u, 0 32 u, 0 Gram, 0 Gram, owner_wc @ 32 i, owner_account_id @ 256 u,  orders @ dict, b> storage ! 
+<b 0 32 u, 2 7 u, 100000000000001 Gram, b> message_to_sign !
+message_to_sign @ hashu owner_private_key @ ed25519_sign_uint signature !
+<b signature @ B, 0 32 u, 2 7 u, 100000000000001 Gram, b> <s  message_to_send !
+
+message_to_send @ 
+recv_external 
+code 
+storage @
+c7
+runvmctx
+
+storage ! 
+exit_code !
+."Exit code " exit_code @ . cr
+36 exit_code @ - 0 = 1 +
+.s
+abort"Test #6.1 failed. Reason: not enough balance, but exception 36 is not thrown"
+
+<b 0 32 u, 2 7 u, 10000000000 Gram,b> message_to_sign !
+message_to_sign @ hashu owner_private_key @ ed25519_sign_uint signature !
+<b signature @ B, 0 32 u, 2 7 u, 10000000000 Gram,b> <s  message_to_send !
+
+message_to_send @ 
+recv_external 
+code 
+storage @
+c7
+runvmctx
+
+storage ! 
+exit_code !
+."Exit code " exit_code @ . cr
+
+exit_code @ 34 - abort"Test #6.2 not passed"
