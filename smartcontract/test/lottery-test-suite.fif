@@ -32,14 +32,38 @@ storage @
 c7 
 runvmctx 
 
+variable exit_code 
+
+drop 
+exit_code ! 
+."Exit code " exit_code @ . cr 
+exit_code @ 0 - abort"Test #1 Not passed"
 
 // Test #2. Send wrong sequence number. 
 
-<b 166 32 u, b> storage !
+variable owner_private_key
+variable owner_public_key 
+variable orders
+variable owner_wc
+variable owner_account_id
+variable message_to_sign
+variable message_to_send
+variable signature
 
-<b 165 32 u, b> <s message !
+"./keys/owner.pk" file>B owner_private_key !
+owner_private_key @ priv>pub owner_public_key !
+dictnew orders !
+0 owner_wc !
+0 owner_account_id !
 
-message @ 
+<b 166 32 u, owner_public_key @ B, 0 32 u, 0 32 u, 0 Gram, 0 Gram, owner_wc @ 32 i, owner_account_id @ 256 u,  orders @ dict, b> storage !
+
+<b 165 32 u, b> message_to_sign !
+
+message_to_sign @ hashu owner_private_key @ ed25519_sign_uint signature !
+<b signature @ B, 165 32 u, b> <s message_to_send !  
+
+message_to_send @ 
 recv_external 
 code 
 storage @ 
@@ -57,23 +81,8 @@ exit_code @ 33 - abort"Test #2 Not passed"
 
 // Test #3. Check owner's signature. Test must send correct seqno and correct signature expect 0.
 
-variable owner_private_key
-variable owner_public_key 
-variable orders
-variable owner_wc
-variable owner_account_id
-
-"./keys/owner.pk" file>B owner_private_key !
-owner_private_key @ priv>pub owner_public_key !
-dictnew orders !
-0 owner_wc !
-0 owner_account_id !
-
 <b 0 32 u, owner_public_key @ B, 0 32 u, 0 32 u, 0 Gram, 0 Gram, owner_wc @ 32 i, owner_account_id @ 256 u,  orders @ dict, b> storage !
 
-variable message_to_sign
-variable message_to_send
-variable signature
 <b 0 32 u, b> message_to_sign !
 message_to_sign @ hashu owner_private_key @ ed25519_sign_uint signature !
 <b signature @ B, 0 32 u, b> <s  message_to_send !  
@@ -88,3 +97,5 @@ runvmctx
 storage ! 
 exit_code ! 
 ."Exit code " exit_code @ . cr 
+
+exit_code @ 0 - abort"Test #3 Not passed"
