@@ -83,9 +83,9 @@ exit_code @ 33 - abort"Test #2 Not passed"
 
 <b 0 32 u, owner_public_key @ B, 0 32 u, 0 32 u, 0 Gram, 0 Gram, owner_wc @ 32 i, owner_account_id @ 256 u,  orders @ dict, b> storage !
 
-<b 0 32 u, b> message_to_sign !
+<b 0 32 u, 55 7 u, b> message_to_sign !
 message_to_sign @ hashu owner_private_key @ ed25519_sign_uint signature !
-<b signature @ B, 0 32 u, b> <s  message_to_send !  
+<b signature @ B, 0 32 u, 55 7 u, b> <s  message_to_send !  
 
 message_to_send @ 
 recv_external 

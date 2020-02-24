@@ -34,5 +34,13 @@ _ unpack_state() inline_ref {
     (int stored_seqno, int pubkey, int order_seqno, int number_of_wins, int incoming_amount, int outgoing_amount, int owner_wc, int owner_account_id, cell orders) = unpack_state();
     throw_unless(33, msg_seqno == stored_seqno);
     throw_unless(34, check_signature(slice_hash(in_msg), signature, pubkey));
+    int action = message~load_uint(7);
+    if (action == 1) { ;; change wallet owner address 
+        throw_unless(35, 288 == slice_bits(message));
+        accept_message();
+        int new_wc = message~load_int(32);
+        int new_account_id = message~load_uint(256);
+        set_data(pack_state(stored_seqno + 1, pubkey, order_seqno, number_of_wins, incoming_amount, outgoing_amount, new_wc, new_account_id, orders));
+    }
 }
 
