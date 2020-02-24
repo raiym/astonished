@@ -125,3 +125,75 @@ exit_code !
 ."Exit code " exit_code @ . cr 
 
 exit_code @ 34 - abort"Test #4 not passed"
+
+// Test #5. Change owner address.
+variable new_owner_wc 
+variable new_owner_account_id 
+
+0 owner_wc !
+0 owner_account_id !
+
+-2 new_owner_wc ! 
+111 new_owner_account_id ! 
+
+<b 0 32 u, owner_public_key @ B, 0 32 u, 0 32 u, 0 Gram, 0 Gram, owner_wc @ 32 i, owner_account_id @ 256 u,  orders @ dict, b> storage ! 
+<b 0 32 u, 1 7 u, new_owner_wc @  32 i, new_owner_account_id @ 256 u, b> message_to_sign !
+message_to_sign @ hashu owner_private_key @ ed25519_sign_uint signature !
+
+<b signature @ B, 0 32 u, 1 7 u, new_owner_wc @ 32 i, new_owner_account_id @ 256 u, b> <s  message_to_send !
+
+message_to_send @ 
+recv_external 
+code 
+storage @
+c7
+runvmctx
+
+storage ! 
+exit_code !
+."Exit code " exit_code @ . cr
+35 exit_code @ - 0 = 
+.s
+abort"Message bits mismatch"
+
+// parse storage to check if address changed 
+
+variable stored_slice 
+variable stored_seqno
+variable stored_pubkey 
+variable stored_order_seqno
+variable number_of_wins 
+variable incoming_amount
+variable outgoing_amount 
+variable stored_wc 
+variable stored_account_id 
+
+storage @ <s stored_slice ! 
+stored_slice @ 32 u@+ stored_slice ! 
+stored_seqno !
+stored_slice @ 32 B@+ stored_slice ! 
+stored_pubkey ! 
+stored_slice @ 32 u@+ stored_slice ! 
+stored_order_seqno ! 
+stored_slice @ 32 u@+ stored_slice ! 
+number_of_wins ! 
+stored_slice @ Gram@+ stored_slice ! 
+incoming_amount !
+stored_slice @ Gram@+ stored_slice !
+outgoing_amount ! 
+stored_slice @ 32 i@+ stored_slice ! // read wc 
+stored_wc ! 
+stored_slice @ 256 u@+ stored_slice ! // read account_id 
+stored_account_id ! 
+
+stored_wc @ new_owner_wc @ = 
+variable is_wc_equal 
+is_wc_equal ! 
+is_wc_equal @ 1 +
+abort"Test #5 failed. Reason: stored wc is different from target"
+
+stored_account_id @ new_owner_account_id @ = 
+variable is_account_id_eq
+is_account_id_eq !
+is_account_id_eq @ 1 +
+abort"Test #5 failed. Reason: stored account_id is different from target"
