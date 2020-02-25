@@ -20,6 +20,27 @@ _ unpack_state() inline_ref {
     return unpacked;
 }
 
+int balance() inline_ref method_id {
+    return get_balance().pair_first();
+}
+
+() send_grams(int wc, int addr, int grams) impure {
+	;; int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool src:MsgAddress -> 011000
+    cell msg = begin_cell()
+    ;;	.store_uint(0, 1) ;; 0 <= format indicator int_msg_info$0 
+    ;;	.store_uint(1, 1) ;; 1 <= ihr disabled
+    ;;	.store_uint(1, 1) ;; 1 <= bounce = true
+    ;;	.store_uint(0, 1) ;; 0 <= bounced = false
+    ;;	.store_uint(4, 5)  ;; 00100 <= address flags, anycast = false, 8-bit workchain
+        .store_uint (196, 9)
+        .store_int(wc, 8)
+        .store_uint(addr, 256)
+        .store_grams(grams)
+        .store_uint(0, 107) ;; 106 zeroes +  0 as an indicator that there is no cell with the data.
+        .end_cell(); 
+    send_raw_message(msg, 3); ;; mode, 2 for ignoring errors, 1 for sender pays fees, 64 for returning inbound message value
+}
+
 () recv_internal(slice in_msg) impure {
     ;; TODO: implementation 
 }
@@ -41,6 +62,12 @@ _ unpack_state() inline_ref {
         int new_wc = message~load_int(32);
         int new_account_id = message~load_uint(256);
         set_data(pack_state(stored_seqno + 1, pubkey, order_seqno, number_of_wins, incoming_amount, outgoing_amount, new_wc, new_account_id, orders));
+    } elseif (action == 2) { ;; send given amount of grams to owner wallet address  
+        int amount_to_send = message~load_grams();
+        throw_if(36, amount_to_send + 500000000 > balance());
+        accept_message();
+        send_grams(owner_wc, owner_account_id, amount_to_send);
+        set_data(pack_state(stored_seqno + 1, pubkey, order_seqno, number_of_wins, incoming_amount, outgoing_amount, owner_wc, owner_account_id, orders));
     }
 }
 

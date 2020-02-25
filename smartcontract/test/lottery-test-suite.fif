@@ -220,9 +220,9 @@ exit_code !
 .s
 abort"Test #6.1 failed. Reason: not enough balance, but exception 36 is not thrown"
 
-<b 0 32 u, 2 7 u, 10000000000 Gram,b> message_to_sign !
+<b 0 32 u, 2 7 u, 10000000000 Gram, b> message_to_sign !
 message_to_sign @ hashu owner_private_key @ ed25519_sign_uint signature !
-<b signature @ B, 0 32 u, 2 7 u, 10000000000 Gram,b> <s  message_to_send !
+<b signature @ B, 0 32 u, 2 7 u, 10000000000 Gram, b> <s  message_to_send !
 
 message_to_send @ 
 recv_external 
@@ -235,4 +235,4 @@ storage !
 exit_code !
 ."Exit code " exit_code @ . cr
 
-exit_code @ 34 - abort"Test #6.2 not passed"
+exit_code @ 0 - abort"Test #6.2 not passed"
