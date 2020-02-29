@@ -236,3 +236,29 @@ exit_code !
 ."Exit code " exit_code @ . cr
 
 exit_code @ 0 - abort"Test #6.2 not passed"
+
+// Test #7. Just send some grams. 
+<b 0 32 u, owner_public_key @ B, 0 32 u, 0 32 u, 0 Gram, 0 Gram, owner_wc @ 32 i, owner_account_id @ 256 u,  orders @ dict, b> storage ! 
+
+"./addresses/sender.addr" load-address 
+2dup 2constant wallet_addr
+."Contract address = " 2dup .addr cr 6 .Addr cr
+
+<b b> <s  message_to_send !
+
+
+
+<b b{1000100} s, wallet_addr addr, 0 Gram, b{00} s, b> constant meta 
+
+4999999991 
+meta 
+message_to_send @ 
+recv_internal 
+code 
+storage @
+c7
+runvmctx
+
+storage ! 
+exit_code ! 
+."Exit code " exit_code @ . cr 
