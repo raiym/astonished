@@ -20,6 +20,31 @@ _ unpack_state() inline_ref {
     return unpacked;
 }
 
+_ pack_order(int id, int status, int timestamp, int amount, int wc, int account_id) inline_ref {
+    return begin_cell()
+            .store_uint(id, 32)
+            .store_uint(status, 8)
+            .store_uint(timestamp, 32)
+            .store_grams(amount)
+            .store_int(wc, 32)
+            .store_uint(account_id, 256);
+}
+
+_ unpack_order(slice order) inline_ref {
+    return (order~load_uint(32), order~load_uint(8), order~load_uint(32), order~load_grams(), order~load_int(32), order~load_uint(256));
+}
+
+var remove_old_orders(var orders, int order_seqno) {
+    int cursor = order_seqno - 20;
+    do {
+        (cursor, var order, var found) = orders.udict_get_prev?(32, cursor);
+        if (found) {
+            orders~udict_delete_get?(32, cursor);
+        }
+    } until ( ~ found)
+    return orders;
+}
+
 int balance() inline_ref method_id {
     return get_balance().pair_first();
 }
@@ -41,8 +66,38 @@ int balance() inline_ref method_id {
     send_raw_message(msg, 3); ;; mode, 2 for ignoring errors, 1 for sender pays fees, 64 for returning inbound message value
 }
 
-() recv_internal(slice in_msg) impure {
-    ;; TODO: implementation 
+() recv_internal(int order_amount, cell in_msg_cell, slice in_msg) impure {
+    var cs = in_msg_cell.begin_parse();
+    int flags = cs~load_uint(4);  ;; int_msg_info$0 ihr_disabled:Bool bounce:Bool bounced:Bool
+    if (flags & 1) { ;; ignore bounced
+        return ();
+    }
+    if (order_amount < 500000000) { ;; just receive grams without changing state 
+        return ();
+    }
+    slice src_addr_slice = cs~load_msg_addr();
+    (int src_wc, int src_addr) = parse_std_addr(src_addr_slice);
+    (int stored_seqno, int pubkey, int order_seqno, int number_of_wins, int incoming_amount, int outgoing_amount, int owner_wc, int owner_account_id, cell orders) = unpack_state();
+    orders = remove_old_orders(orders, order_seqno);
+    if (balance() < 2 * order_amount + 500000000) { ;; not enough grams to pay the bet back, so this is re-fill
+        builder order = pack_order(order_seqno, 1, now(), order_amount, src_wc, src_addr);
+        orders~udict_set_builder(32, order_seqno, order);
+        set_data(pack_state(stored_seqno, pubkey, order_seqno + 1, number_of_wins, incoming_amount + order_amount, outgoing_amount, owner_wc, owner_account_id, orders));
+        return ();
+    }
+    if (rand(10) >= 4) {
+        builder order = pack_order(order_seqno, 3, now(), order_amount, src_wc, src_addr);
+        orders~udict_set_builder(32, order_seqno, order);
+        set_data(pack_state(stored_seqno, pubkey, order_seqno + 1, number_of_wins, incoming_amount + order_amount, outgoing_amount, owner_wc, owner_account_id, orders));
+        if (order_amount > 3000000000) {
+            send_grams(src_wc, src_addr, order_amount / 3);
+        }
+        return ();
+    }
+    send_grams(src_wc, src_addr, 2 * order_amount);
+    builder order = pack_order(order_seqno, 2, now(), order_amount, src_wc, src_addr);
+    orders~udict_set_builder(32, order_seqno, order);
+    set_data(pack_state(stored_seqno, pubkey, order_seqno + 1, number_of_wins + 1, incoming_amount, outgoing_amount + 2 * order_amount, owner_wc, owner_account_id, orders));
 }
 
 () recv_external(slice in_msg) impure {
