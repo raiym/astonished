@@ -157,7 +157,11 @@ var get_orders() method_id {
     throw_unless(33, msg_seqno == stored_seqno);
     throw_unless(34, check_signature(slice_hash(in_msg), signature, pubkey));
     int action = message~load_uint(7);
-    if (action == 1) { ;; change wallet owner address 
+    if (action == 0) { ;; init contract 
+        throw_unless(32, stored_seqno == 0);
+        accept_message();
+        set_data(pack_state(stored_seqno + 1, pubkey, order_seqno, number_of_wins, incoming_amount, outgoing_amount, owner_wc, owner_account_id, orders));
+    } elseif (action == 1) { ;; change wallet owner address 
         throw_unless(35, 288 == slice_bits(message));
         accept_message();
         int new_wc = message~load_int(32);
