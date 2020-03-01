@@ -1,1 +1,2 @@
-# astonished
+# Simple TON Lottery
+

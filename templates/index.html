@@ -1,0 +1,142 @@
+$def with (json2)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="static/favicon/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+    <link href="static/favicon/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">
+    <link href="static/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png">
+    <link href="static/favicon/site.webmanifest" rel="manifest">
+    <title>TON Lottery</title>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">TON Lottery</a>
+</nav>
+<div class="container">
+    <!-- Content here -->
+    <div class="row">
+        <div class="col-sm-4">
+            <br/>
+            <div class="font-italic"><b>About:</b> Send Grams to following address and instantly receive back double
+                amount with 40% win rate.
+            </div>
+            <div id="actual_success_rate">Actual success rate:</div>
+            <hr/>
+            <div id="address">Address:</div>
+            <div id="recommended_bet">Recommended bet:</div>
+            <hr/>
+            <div id="balance">Balance:</div>
+            <div id="incoming_amount">Lost amount:</div>
+            <div id="outgoing_amount">Payed amount:</div>
+            <div id="order_number">Number of orders:</div>
+            <div id="number_of_wins">Number of wins:</div>
+
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-7">
+            <br/>
+            <div><b>20 recent bets: </b></div>
+
+            <div>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Result</th>
+                        <th scope="col">Sender</th>
+                        <th scope="col">Time</th>
+                    </tr>
+                    </thead>
+                    <tbody id="orders">
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td>@mdo</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <hr/>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    let timeSince = function (date) {
+        if (typeof date !== 'object') {
+            date = new Date(date);
+        }
+
+        let seconds = Math.floor((new Date() - date) / 1000);
+        let intervalType;
+
+        let interval = Math.floor(seconds / 31536000);
+        if (interval >= 1) {
+            intervalType = 'year';
+        } else {
+            interval = Math.floor(seconds / 2592000);
+            if (interval >= 1) {
+                intervalType = 'month';
+            } else {
+                interval = Math.floor(seconds / 86400);
+                if (interval >= 1) {
+                    intervalType = 'day';
+                } else {
+                    interval = Math.floor(seconds / 3600);
+                    if (interval >= 1) {
+                        intervalType = "hour";
+                    } else {
+                        interval = Math.floor(seconds / 60);
+                        if (interval >= 1) {
+                            intervalType = "minute";
+                        } else {
+                            interval = seconds;
+                            intervalType = "second";
+                        }
+                    }
+                }
+            }
+        }
+
+        if (interval > 1 || interval === 0) {
+            intervalType += 's';
+        }
+
+        return interval + ' ' + intervalType + ' ago';
+    };
+
+    let data = '$json2';
+    data = data.replace(/&quot;/g, '"');
+    // console.log(data);
+    let text = JSON.parse(data);
+
+    document.getElementById('address').innerHTML = '<b>Lottery address: <br/></b>' + text.address;
+    document.getElementById('balance').innerHTML = '<b>Balance: </b>' + (text.balance) + ' Grams';
+    document.getElementById('outgoing_amount').innerHTML = '<b>Payed amount: </b>' + (text.outgoing_amount) + ' Grams';
+    document.getElementById('incoming_amount').innerHTML = '<b>Lost amount: </b>' + (text.incoming_amount) + ' Grams';
+    document.getElementById('order_number').innerHTML = '<b>Number of bets: </b>' + text.order_seqno;
+    document.getElementById('number_of_wins').innerHTML = '<b>Number of wins: </b>' + text.number_of_wins;
+    document.getElementById('actual_success_rate').innerHTML = '<b>Actual win rate: </b>' + (text.number_of_wins / text.order_seqno * 100).toFixed(2) + '%';
+    document.getElementById('recommended_bet').innerHTML = '<b>Recommended bet: </b>' + (Math.round(text.balance / 10)) + ' Grams';
+    let order_html = '';
+    for (let i = text.orders.length - 1; i >= 0; i--) {
+        let order = text.orders[i];
+        let order_status = (order.status === 2) ? '<b class="text-success">Won ' + (order.amount * 2) + 'Gr<b/> ' : '<b class="text-danger">Lost</b>';
+        order_html +=
+            '<tr><td>' + (order.id) + '</td>' +
+            '<td><b>' + (order.amount) + ' Gr</b></td>' +
+            '<td>' + order_status + '</td>' +
+            '<td>' + order.address + '</td>' +
+            '<td>' + timeSince(new Date(order.timestamp * 1000)) + '</td></tr>';
+    }
+    document.getElementById('orders').innerHTML = order_html
+</script>
+</body>
+
+</html>
