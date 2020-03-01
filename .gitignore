@@ -2,3 +2,6 @@
 /smartcontract/stdlib.fc
 */lottery-compiled-for-test.fif
 build/
+*/lottery.pk
+*/lottery.addr
+*.boc

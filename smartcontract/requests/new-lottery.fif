@@ -1,0 +1,51 @@
+#!/usr/bin/env fift -s
+"TonUtil.fif" include
+"Asm.fif" include
+
+$1 parse-workchain-id =: wc    // set workchain id from command line argument
+def? $2 { @' $2 } { "lottery" } cond constant file-base
+
+."Creating new wallet in workchain " wc . cr
+
+"../build/lottery-compiled.fif" include
+// >libref
+variable owner_workchain 
+variable owner_account_id
+variable orders 
+
+0 owner_workchain ! 
+0xa50a5b9673899f06fb5b9ca6312256d41db946eb8aa7dbf85d38bfad43453854 owner_account_id ! 
+
+dictnew orders !
+
+// code
+<b 0 32 u, file-base +".pk" load-generate-keypair constant wallet_pk B, 0 32 u, 0 32 u, 0 Gram, 0 Gram, owner_workchain @ 32 i, owner_account_id @ 256 u, orders @ dict, b>
+
+null // no libraries
+// Libs{ x{ABACABADABACABA} drop x{AAAA} s>c public_lib x{1234} x{5678} |_ s>c public_lib }Libs
+
+<b b{0011} s, 3 roll ref, rot ref, swap dict, b>  // create StateInit
+dup ."StateInit: " <s csr. cr
+dup hashu wc swap 2dup 2constant wallet_addr
+."new wallet address = " 2dup .addr cr
+2dup file-base +".addr" save-address-verbose
+."Non-bounceable address (for init): " 2dup 7 .Addr cr
+."Bounceable address (for later access): " 6 .Addr cr
+
+<b 0 32 u, 0 7 u, b>
+dup ."signing message: " <s csr. cr
+dup hashu wallet_pk ed25519_sign_uint rot
+<b 
+b{1000100} s, 
+wallet_addr addr, 
+b{000010} s, 
+swap <s s, 
+b{0} s, 
+swap B, 
+swap <s s, 
+b>
+
+dup ."External message for initialization is " <s csr. cr
+2 boc+>B dup Bx. cr
+file-base +"-query.boc" tuck B>file
+."(Saved wallet creating query to file " type .")" cr
