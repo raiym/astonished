@@ -15,13 +15,13 @@ RUN git clone https://github.com/ton-blockchain/ton/ && \
     cd .. && \
     mkdir liteclient-build && \
     cd liteclient-build && \
-    cmake ../ton && \
+    cmake ../ton -DCMAKE_BUILD_TYPE=Release && \
     cmake --build . --target lite-client && \
     cmake --build . --target fift && \
     cmake --build . --target func && \
     wget https://test.ton.org/ton-lite-client-test1.config.json
 EXPOSE 8080
+RUN pip3 install web.py==0.40
 COPY . /astonished
 WORKDIR /astonished
-RUN pip3 install -r requirements.txt
 CMD python3 main.py 8080 "/liteclient-build/lite-client/lite-client -C /liteclient-build/ton-lite-client-test1.config.json" "/liteclient-build/crypto/fift -I/ton/crypto/fift/lib/ -i" "0QBGmXMGnmBvHqsJgYsUt3RLFUpz--llIr9wWqDPYmrj4Fc0"

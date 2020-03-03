@@ -5,3 +5,6 @@ build/
 */lottery.pk
 */lottery.addr
 *.boc
+.idea/
+__pycache__/
+venv
