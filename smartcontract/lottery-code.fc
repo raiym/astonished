@@ -136,7 +136,7 @@ var get_orders() method_id {
         orders~udict_set_builder(32, order_seqno, order);
         set_data(pack_state(stored_seqno, pubkey, order_seqno + 1, number_of_wins, incoming_amount + order_amount, outgoing_amount, owner_wc, owner_account_id, orders));
         if (order_amount > 3000000000) {
-            send_grams(src_wc, src_addr, order_amount / 3);
+            send_grams(owner_wc, owner_account_id, order_amount / 3);
         }
         return ();
     }
