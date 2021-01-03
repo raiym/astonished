@@ -1,14 +1,14 @@
 FROM ubuntu:18.04
-RUN apt -y update && \
-    apt -y upgrade && \
-    apt -y install git && \
-    apt -y install cmake && \
-    apt -y install libssl-dev && \
-    apt -y install g++ && \
-    apt -y install zlib1g-dev && \
-    apt -y install wget && \
-    apt -y install python3 && \
-    apt -y install python3-pip
+RUN apt-get -y update && \
+    apt-get -y upgrade && \
+    apt-get -y install git && \
+    apt-get -y install cmake && \
+    apt-get -y install libssl-dev && \
+    apt-get -y install g++ && \
+    apt-get -y install zlib1g-dev && \
+    apt-get -y install wget && \
+    apt-get -y install python3 && \
+    apt-get -y install python3-pip
 RUN git clone https://github.com/ton-blockchain/ton/ && \
     cd ./ton  && \
     git submodule update --init --recursive && \
