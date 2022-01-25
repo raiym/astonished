@@ -9,7 +9,7 @@ RUN apt-get -y update && \
     apt-get -y install wget && \
     apt-get -y install python3 && \
     apt-get -y install python3-pip
-RUN git clone https://github.com/ton-blockchain/ton/ && \
+RUN git clone https://github.com/newton-blockchain/ton && \
     cd ./ton  && \
     git submodule update --init --recursive && \
     cd .. && \
