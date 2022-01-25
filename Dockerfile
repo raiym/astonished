@@ -19,7 +19,7 @@ RUN git clone https://github.com/newton-blockchain/ton && \
     cmake --build . --target lite-client && \
     cmake --build . --target fift && \
     cmake --build . --target func && \
-    wget https://test.ton.org/ton-lite-client-test1.config.json
+    wget https://newton-blockchain.github.io/global.config.json
 EXPOSE 8080
 RUN pip3 install web.py==0.40
 COPY . /astonished
