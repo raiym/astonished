@@ -10,4 +10,4 @@ Russian: https://habr.com/en/post/490772/
 
 
 
-Link to lottery: https://astonished-695dn.ondigitalocean.app
+Link to lottery: https://astonished-d472d.ondigitalocean.app

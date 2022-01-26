@@ -24,4 +24,4 @@ EXPOSE 8080
 RUN pip3 install web.py==0.40
 COPY . /astonished
 WORKDIR /astonished
-CMD python3 main.py 8080 "/liteclient-build/lite-client/lite-client -C /liteclient-build/global.config.json" "/liteclient-build/crypto/fift -I/ton/crypto/fift/lib/ -i" "0QAESRAUnb6vjq27KyhyLn1qLcbiZOwvHZvr1vsgkHm8Ksyd"
+CMD python3 main.py 8080 "/liteclient-build/lite-client/lite-client -C /liteclient-build/global.config.json" "/liteclient-build/crypto/fift -I/ton/crypto/fift/lib/ -i" "0QDybPok_wqfA0ASUtds87EbJZ2zItVpaapsHd9LHqpp1ntG"
