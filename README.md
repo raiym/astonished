@@ -1,6 +1,6 @@
 # Simple TON Lottery
 
-Instant-lottery smart-contract developed for Telegram Open Network (test.ton.org). 
+Instant-lottery smart-contract developed for Telegram Open Network (https://ton.org). 
 
 This is sattelite repository for article first published on Habr. 
 

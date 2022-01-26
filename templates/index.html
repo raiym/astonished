@@ -116,7 +116,7 @@ $def with (json2)
     // console.log(data);
     let text = JSON.parse(data);
 
-    document.getElementById('address').innerHTML = '<b>Lottery address: <br/></b>' + text.address;
+    document.getElementById('address').innerHTML = '<b>Lottery address: <br/></b><a href="ton://' + text.address + '">' + text.address + '</a>';
     document.getElementById('balance').innerHTML = '<b>Balance: </b>' + (text.balance) + ' Grams';
     document.getElementById('outgoing_amount').innerHTML = '<b>Payed amount: </b>' + (text.outgoing_amount) + ' Grams';
     document.getElementById('incoming_amount').innerHTML = '<b>Lost amount: </b>' + (text.incoming_amount) + ' Grams';
