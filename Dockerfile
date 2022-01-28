@@ -22,6 +22,7 @@ RUN git clone https://github.com/newton-blockchain/ton && \
     wget https://newton-blockchain.github.io/global.config.json
 EXPOSE 8080
 RUN pip3 install web.py==0.40
+ARG CACHE_DATE=2020-01-01
 COPY . /astonished
 WORKDIR /astonished
 CMD python3 main.py 8080 "/liteclient-build/lite-client/lite-client -C /liteclient-build/global.config.json" "/liteclient-build/crypto/fift -I/ton/crypto/fift/lib/ -i" "EQDybPok_wqfA0ASUtds87EbJZ2zItVpaapsHd9LHqpp1p0J"
